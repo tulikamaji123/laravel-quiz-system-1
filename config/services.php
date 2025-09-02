@@ -48,5 +48,9 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect'      => '/auth/google/callback',
     ],
+    'openai' => [
+    'key' => env('OPENAI_API_KEY'),
+],
+
 
 ];

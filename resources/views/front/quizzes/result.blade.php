@@ -1,37 +1,36 @@
 <x-app-layout>
     <div class="py-12">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <h6 class="text-xl font-bold">Test Results</h6>
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-8">
 
-                    <table class="mt-4 table w-full table-view">
-                        <tbody class="bg-white">
+            {{-- Test Summary --}}
+            <div class="bg-white shadow-sm rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <h6 class="text-xl font-bold mb-4">📊 Test Summary</h6>
+
+                    <table class="w-full border border-gray-200 text-sm">
+                        <tbody>
                             @if (auth()->user()?->is_admin)
-                                <tr class="w-28">
-                                    <th
-                                        class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
-                                        User</th>
-                                    <td class="border border-solid px-6 py-3">{{ $test->user->name ?? '' }}
-                                        ({{ $test->user->email ?? '' }})</td>
+                                <tr>
+                                    <th class="bg-gray-100 border px-4 py-2 text-left font-semibold">User</th>
+                                    <td class="border px-4 py-2">
+                                        {{ $test->user->name ?? '' }} ({{ $test->user->email ?? '' }})
+                                    </td>
                                 </tr>
                             @endif
-                            <tr class="w-28">
-                                <th
-                                    class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
-                                    Date</th>
-                                <td class="border border-solid px-6 py-3">
-                                    {{ $test->created_at->format('D m/Y, h:m A') ?? '' }}</td>
+                            <tr>
+                                <th class="bg-gray-100 border px-4 py-2 text-left font-semibold">Date</th>
+                                <td class="border px-4 py-2">
+                                    {{ $test->created_at->format('D d/m/Y, h:i A') ?? '' }}
+                                </td>
                             </tr>
-                            <tr class="w-28">
-                                <th
-                                    class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
-                                    Result</th>
-                                <td class="border border-solid px-6 py-3">
-                                    {{ $test->result }} / {{ $questions_count }}
+                            <tr>
+                                <th class="bg-gray-100 border px-4 py-2 text-left font-semibold">Result</th>
+                                <td class="border px-4 py-2">
+                                    <span class="font-bold text-green-600">{{ $test->result }}</span> / {{ $questions_count }}
                                     @if ($test->time_spent)
-                                        (time: {{ sprintf('%.2f', $test->time_spent / 60) }}
-                                        minutes)
+                                        <span class="text-gray-600 ml-2 text-sm">
+                                            (time: {{ sprintf('%.2f', $test->time_spent / 60) }} minutes)
+                                        </span>
                                     @endif
                                 </td>
                             </tr>
@@ -39,29 +38,33 @@
                     </table>
                 </div>
             </div>
-        </div>
-        <br>
-        @isset($leaderboard)
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-12">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h6 class="text-xl font-bold">Leaderboard</h6>
 
-                        <table class="table mt-4 w-full table-view">
-                            <thead>
-                                <th class="text-left">Rank</th>
-                                <th class="text-left">Username</th>
-                                <th class="text-left">Results</th>
+            {{-- Leaderboard --}}
+            @isset($leaderboard)
+                <div class="bg-white shadow-sm rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <h6 class="text-xl font-bold mb-4">🏆 Leaderboard</h6>
+
+                        <table class="w-full border border-gray-200 text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left">Rank</th>
+                                    <th class="px-4 py-2 text-left">Username</th>
+                                    <th class="px-4 py-2 text-left">Result</th>
+                                </tr>
                             </thead>
-                            <tbody class="bg-white">
+                            <tbody>
                                 @foreach ($leaderboard as $test)
                                     <tr @class([
-                                        'bg-gray-100' => auth()->user()->name == $test->user->name,
+                                        'bg-gray-100 font-semibold' => auth()->user()->name == $test->user->name,
                                     ])>
-                                        <td class="w-9">{{ $loop->iteration }}</td>
-                                        <td class="w-1/2">{{ $test->user->name }}</td>
-                                        <td>{{ $test->result }} / {{ $questions_count }} (time:
-                                            {{ sprintf('%.2f', $test->time_spent / 60) }} minutes)
+                                        <td class="px-4 py-2">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-2">{{ $test->user->name }}</td>
+                                        <td class="px-4 py-2">
+                                            {{ $test->result }} / {{ $questions_count }}
+                                            <span class="text-gray-600 text-sm">
+                                                ({{ sprintf('%.2f', $test->time_spent / 60) }} min)
+                                            </span>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -69,69 +72,69 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        @endisset
-        <br>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            @endisset
+
+            {{-- Detailed Results --}}
+            <div class="bg-white shadow-sm rounded-lg">
                 <div class="p-6 text-gray-900">
+                    <h6 class="text-xl font-bold mb-6">📖 Question Details</h6>
+
                     @foreach ($results as $result)
-                        <table class="table table-view w-full my-4 bg-white">
-                            <tbody class="bg-white">
-                                <tr class="bg-gray-100">
-                                    <td class="w-1/2">Question #{{ $loop->iteration }}</td>
-                                    <td>{!! nl2br($result->question->text) !!}</td>
-                                </tr>
-                                <tr>
-                                    <td>Options</td>
-                                    <td>
-                                        @foreach ($result->question->options as $option)
-                                            <li @class([
-                                                'underline' => $result->option_id == $option->id,
-                                                'font-bold' => $option->correct == 1,
-                                            ])>
-                                                {{ $option->text }}
-                                                @if ($option->correct == 1)
-                                                    <span class="italic">(correct answer)</span>
-                                                @endif
-                                                @if ($result->option_id == $option->id)
-                                                    <span class="italic">(your answer)</span>
-                                                @endif
-                                            </li>
-                                        @endforeach
-                                        @if (is_null($result->option_id))
-                                            <span class="font-bold italic">Question unanswered.</span>
+                        <div class="mb-6">
+                            <div class="mb-3">
+                                <span class="font-semibold text-gray-700">
+                                    Question #{{ $loop->iteration }}:
+                                </span>
+                                <span class="ml-2">{!! nl2br($result->question->text) !!}</span>
+                            </div>
+
+                            {{-- Options --}}
+                            <ul class="list-disc ml-6 space-y-1">
+                                @foreach ($result->question->options as $option)
+                                    <li @class([
+                                        'font-bold text-green-600' => $option->correct == 1,
+                                        'underline' => $result->option_id == $option->id,
+                                    ])>
+                                        {{ $option->text }}
+                                        @if ($option->correct == 1)
+                                            <span class="italic text-gray-500">(correct)</span>
                                         @endif
-                                    </td>
-                                </tr>
-                                @if ($result->question->answer_explanation || $result->question->more_info_link)
-                                    <tr>
-                                        <td>Answer Explanation</td>
-                                        <td>
+                                        @if ($result->option_id == $option->id)
+                                            <span class="italic text-blue-600">(your answer)</span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                            @if (is_null($result->option_id))
+                                <p class="text-red-600 italic mt-2">Question unanswered.</p>
+                            @endif
+
+                            {{-- Explanation --}}
+                            @if ($result->question->answer_explanation || $result->question->more_info_link)
+                                <div class="mt-3 p-3 bg-gray-50 rounded border">
+                                    @if ($result->question->answer_explanation)
+                                        <p class="text-gray-700">
+                                            <span class="font-semibold">Explanation:</span>
                                             {{ $result->question->answer_explanation }}
-                                        </td>
-                                    </tr>
-                                    @if ($result->question->more_info_link)
-                                        <tr>
-                                            <td>
-                                                Read more:
-                                            </td>
-                                            <td>
-                                                <div class="mt-4">
-                                                    <a href="{{ $result->question->more_info_link }}"
-                                                        class="hover:underline" target="_blank">
-                                                        {{ $result->question->more_info_link }}
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        </p>
                                     @endif
-                                @endif
-                            </tbody>
-                        </table>
+
+                                    @if ($result->question->more_info_link)
+                                        <p class="mt-2">
+                                            <a href="{{ $result->question->more_info_link }}"
+                                               class="text-blue-600 hover:underline"
+                                               target="_blank">
+                                                🔗 Read more
+                                            </a>
+                                        </p>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
 
                         @if (!$loop->last)
-                            <hr class="my-4 md:min-w-full">
+                            <hr class="my-6 border-gray-300">
                         @endif
                     @endforeach
                 </div>

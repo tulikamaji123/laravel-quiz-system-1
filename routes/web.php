@@ -13,6 +13,8 @@ use App\Http\Livewire\Question\QuestionList;
 use App\Http\Livewire\Quiz\QuizForm;
 use App\Http\Livewire\Quiz\QuizList;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AIQuizController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,15 @@ Route::middleware('throttle:1,1')->group(function () {
     Route::get('quiz/{quiz}', [HomeController::class, 'show'])->name('quiz.show');
 });
 Route::get('results/{test}', [ResultController::class, 'show'])->name('results.show');
+
+//API 
+Route::get('/ai-quiz', function () {
+    return view('ai_topic');
+})->name('ai.quiz.topic');
+
+Route::post('/ai-quiz/generate', [AIQuizController::class, 'generateQuestions'])->name('ai.quiz.generate');
+Route::post('/ai-quiz/check', [AIQuizController::class, 'checkAnswers'])->name('ai.quiz.check');
+
 
 // protected routes
 Route::middleware('auth')->group(function () {
